@@ -14,9 +14,10 @@ git clone https://github.com/1more/WebCrawlerWithLogin.git
 
 1. Find out login process from the website which you want to login.
 2. Make `URLWithOption` instance with that information.
-3. Make `LoginCrawler` instance and call `doLogin` methods with `URLWithOption` instance.
-4. You need to call `allowAllCertificates` method for allow untrusted certificate.
-5. Call `crawl` method with url of the page you need to crawl.
+3. Make `LoginCrawler` instance. Initialize it with `URLWithOption` instances.
+4. You need to call `allowAllCertificates` method if you need to allow untrusted certificate.
+5. Call `doLogin` methods for login. It makes cookie which contains login session value.
+6. Call `crawl` method with url of the page you need to crawl.
 
 ## Notice
 
