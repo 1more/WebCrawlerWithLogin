@@ -15,6 +15,9 @@ public class URLWithOption {
 	private String url;
 	private String param;
 	private String method;
+	
+	public static final String GET = "GET";
+	public static final String POST = "POST";
 
 	/** Constructor **/
 	/**
@@ -35,7 +38,7 @@ public class URLWithOption {
 		return url;
 	}
 	public void setUrl(String url) {
-		if(this.url.startsWith("http"))
+		if(url.startsWith("http"))
 			this.url = url;
 		else
 			this.url = "http://" + url;

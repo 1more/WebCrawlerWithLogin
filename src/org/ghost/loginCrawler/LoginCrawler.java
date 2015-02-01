@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -31,10 +34,19 @@ import org.ghost.loginCrawler.model.URLWithOption;
  */
 public class LoginCrawler {
 	private String cookies;
+	private List<URLWithOption> loginUrls;
 
-	/** Constructor **/
-	public LoginCrawler() {
-		cookies = null;
+	/** Constructors **/
+	public LoginCrawler(URLWithOption url) {
+		List<URLWithOption> urlList = new ArrayList<URLWithOption>();
+		urlList.add(url);
+		loginUrls = urlList;
+		cookies = "";
+	}
+
+	public LoginCrawler(List<URLWithOption> urls) {
+		this.loginUrls = urls;
+		cookies = "";
 	}
 
 	/** Getter and Setter **/
@@ -43,44 +55,50 @@ public class LoginCrawler {
 	}
 
 	/**
-	 * @param String
-	 *            [] loginURLs : properly ordered url strings which is used for
-	 *            login.
+	 * @param String[] loginURLs - properly ordered url strings which is used for login.
 	 * @return String which contains cookie values
 	 * @throws IOException
 	 * @throws NoSuchAlgorithmException
 	 * @throws KeyManagementException
 	 */
-	public String doLogin(URLWithOption[] loginURLs) throws IOException,
-			NoSuchAlgorithmException, KeyManagementException {
-
-		// clear previous cookie data
-		cookies = null;
+	public String doLogin() throws IOException, NoSuchAlgorithmException,
+			KeyManagementException {
+		cookies = "";
 
 		// do login process
-		for (int i = 0; i < loginURLs.length; i++) {
-			this.makeCookie(loginURLs[i].getUrl(), loginURLs[i].getParam(),
-					loginURLs[i].getMethod());
+		Iterator<URLWithOption> i = loginUrls.iterator();
+		while (i.hasNext()) {
+			this.makeCookie(i.next());
 		}
 
 		return cookies;
 	}
 
+	/**
+	 * @param url - URL String you want to crawl.
+	 * @return InputStream - InputStream contains crawled HTML sources.
+	 * @throws IOException
+	 * @throws KeyManagementException
+	 * @throws NoSuchAlgorithmException
+	 */
 	public InputStream crawl(String url) throws IOException,
 			KeyManagementException, NoSuchAlgorithmException {
-		URLConnection con;
+
+		URLConnection con = null;
 		URL urlObj = new URL(url);
 
 		String protocol = urlObj.getProtocol();
 
 		if (protocol.equals("https")) {
-			con = (HttpsURLConnection) urlObj.openConnection();
+			con = (HttpsURLConnection) urlObj
+					.openConnection();
 		} else {
 			con = (HttpURLConnection) urlObj.openConnection();
 		}
-		
+
 		con.setDoOutput(true);
 		con.setRequestProperty("Cookie", cookies);
+
 		return con.getInputStream();
 	}
 
@@ -91,7 +109,7 @@ public class LoginCrawler {
 			KeyManagementException {
 
 		TrustManager[] trustManager = new TrustManager[1];
-		trustManager[1] = new TrustAllTrustManager();
+		trustManager[0] = new TrustAllTrustManager();
 
 		SSLContext socketContext = SSLContext.getInstance("SSL");
 		socketContext.init(null, trustManager, null);
@@ -102,33 +120,33 @@ public class LoginCrawler {
 				.setDefaultHostnameVerifier(new TrustAllHostnameVerifier());
 	}
 
-	private void makeCookie(String urlString, String param, String method)
-			throws IOException, NoSuchAlgorithmException,
-			KeyManagementException {
-		URLConnection con;
-		URL url = new URL(urlString);
+	private void makeCookie(URLWithOption urlwo) throws IOException,
+			NoSuchAlgorithmException, KeyManagementException {
 
-		String host = url.getHost();
-		String protocol = url.getProtocol();
+		URL urlObj = new URL(urlwo.getUrl());
+		URLConnection con = null;
+
+		String host = urlObj.getHost();
+		String protocol = urlObj.getProtocol();
 
 		if (protocol.equals("https")) {
-			con = (HttpsURLConnection) url.openConnection();
+			con = (HttpsURLConnection) urlObj.openConnection();
 		} else {
-			con = (HttpURLConnection) url.openConnection();
+			con = (HttpURLConnection) urlObj.openConnection();
 		}
 
 		con.setUseCaches(true);
 		con.setDoOutput(true);
-		((HttpURLConnection) con).setRequestMethod(method);
+		((HttpURLConnection) con).setRequestMethod(urlwo.getMethod());
 		((HttpURLConnection) con).setInstanceFollowRedirects(false);
 		con.setRequestProperty("Content-Type",
 				"application/x-www-form-urlencoded");
 		con.setRequestProperty("Host", host);
 		con.setRequestProperty("Cookie", cookies);
 
-		if (param != null) {
+		if (urlwo.getParam() != null) {
 			OutputStream outputStream = con.getOutputStream();
-			outputStream.write(param.getBytes());
+			outputStream.write(urlwo.getParam().getBytes());
 			outputStream.flush();
 			outputStream.close();
 		}
@@ -137,14 +155,23 @@ public class LoginCrawler {
 	}
 
 	private void getCookieFromURLConnection(URLConnection con) {
-		String cookieHeader = con.getHeaderField("Set-Cookie");
+		Map<String, List<String>> cookie = con.getHeaderFields();
 
-		if (cookieHeader != null) {
-			if (cookies != null) {
-				cookies += ";" + cookieHeader;
-			} else {
-				cookies = cookieHeader;
+		if (cookie.containsKey("Set-Cookie")) {
+			StringBuilder sb = new StringBuilder();
+
+			List<String> cookieList = cookie.get("Set-Cookie");
+			Iterator<String> i = cookieList.iterator();
+
+			while (i.hasNext()) {
+				sb.append(i.next());
+				sb.append(";");
 			}
+
+			sb.append(cookies);
+			cookies = sb.toString();
+		} else {
+			cookies = "";
 		}
 	}
 }
