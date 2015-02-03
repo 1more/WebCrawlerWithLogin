@@ -7,11 +7,11 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 /**
- * @author Hyeonwook Kim
+ * @author Hyeonwook Kim, Youngkwang Han
  * @email khw0867@gmail.com
  * @classname TrustAllTrustManager.java
  * @package org.ghost.loginCrawler.SSL
- * @date 2015. 1. 31.
+ * @date 2015. 2. 01.
  *
  */
 public class TrustAllTrustManager implements TrustManager, X509TrustManager {
