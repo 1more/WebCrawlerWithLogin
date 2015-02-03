@@ -4,11 +4,11 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 
 /**
- * @author Hyeonwook Kim
+ * @author Hyeonwook Kim, Youngkwnag Han
  * @email khw0867@gmail.com
  * @classname TrustAllHostnameVerifier.java
  * @package org.ghost.loginCrawler.SSL
- * @date 2015. 1. 31.
+ * @date 2015. 2. 01.
  *
  */
 public class TrustAllHostnameVerifier implements HostnameVerifier {

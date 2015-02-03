@@ -1,11 +1,11 @@
 package org.ghost.loginCrawler.model;
 
 /**
- * @author Hyeonwook Kim
+ * @author Hyeonwook Kim, Youngkwnag Han
  * @email khw0867@gmail.com
  * @classname URLWithOption.java
  * @package org.ghost.loginCrawler.model
- * @date 2015. 1. 30.
+ * @date 2015. 2. 03.
  * @purpose : Model for Crawler. 
  *
  * @comment :

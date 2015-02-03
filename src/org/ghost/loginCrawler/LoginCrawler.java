@@ -22,11 +22,11 @@ import org.ghost.loginCrawler.SSL.TrustAllTrustManager;
 import org.ghost.loginCrawler.model.URLWithOption;
 
 /**
- * @author Hyeonwook Kim
+ * @author Hyeonwook Kim, Youngkwang Han
  * @email khw0867@gmail.com
  * @classname LoginCrawler.java
  * @package org.ghost.loginCrawler
- * @date 2015. 1. 30.
+ * @date 2015. 2. 03.
  * @purpose : Crawling web page which needs login process
  *
  * @comment :
